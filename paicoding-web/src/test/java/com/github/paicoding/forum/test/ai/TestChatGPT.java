@@ -16,11 +16,12 @@ public class TestChatGPT {
 
         ChatGPT chatGPT = ChatGPT.builder()
 //                .apiKey("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")
-                .apiKey("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")
+                .apiKey("")
                 .proxy(proxy)
                 .apiHost("https://api.openai.com/") //反向代理地址
                 .build()
                 .init();
+
 
         String res = chatGPT.chat("写一段七言绝句诗，题目是：火锅！");
         System.out.println(res);
