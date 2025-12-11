@@ -4,9 +4,11 @@ import com.github.paicoding.forum.api.model.enums.DocumentTypeEnum;
 import com.github.paicoding.forum.api.model.enums.NotifyTypeEnum;
 import com.github.paicoding.forum.api.model.enums.OperateTypeEnum;
 import com.github.paicoding.forum.api.model.vo.PageParam;
+import com.github.paicoding.forum.api.model.vo.notify.NotifyMsgEvent;
 import com.github.paicoding.forum.api.model.vo.user.dto.SimpleUserInfoDTO;
 import com.github.paicoding.forum.api.model.vo.user.dto.UserFootStatisticDTO;
 import com.github.paicoding.forum.core.common.CommonConstants;
+import com.github.paicoding.forum.core.util.SpringUtil;
 import com.github.paicoding.forum.service.article.service.ArticleReadService;
 import com.github.paicoding.forum.service.comment.repository.entity.CommentDO;
 import com.github.paicoding.forum.service.comment.service.CommentReadService;
@@ -123,12 +125,16 @@ public class UserFootServiceImpl implements UserFootService {
             // 不需要发送通知的场景，直接返回
             return;
         }
-        RabbitNotifyHelper.publishEvent(CommonConstants.DIRECT_EXCHANGE, notifyType.getQueueKey(), readUserFootDO);
+        if(RabbitNotifyHelper.enable()) {
+            RabbitNotifyHelper.publishEvent(CommonConstants.DIRECT_EXCHANGE, notifyType.getQueueKey(), readUserFootDO);
+        }else {
+            SpringUtil.publishEvent(new NotifyMsgEvent<>(this, notifyType, readUserFootDO));
+        }
         // 点赞消息走 同时发给rabbit和kafka
         //todo 这里还有kafka的没完成
-        if (notifyType.equals(NotifyTypeEnum.PRAISE)) {
-            kafkaTemplate.send(CommonConstants.TOPIC_PRAISE, "卡夫卡消息来了");
-        }
+        //if (notifyType.equals(NotifyTypeEnum.PRAISE)) {
+        //    kafkaTemplate.send(CommonConstants.TOPIC_PRAISE, "卡夫卡消息来了");
+        //}
     }
 
     @Override

@@ -11,6 +11,9 @@ public class RabbitNotifyHelper {
     public RabbitNotifyHelper(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
+    public static boolean enable() {
+        return "true".equals(SpringUtil.getConfig("rabbitmq.switch-flag"));
+    }
 
     public <T> void publish(String exchange, String routingKey, T content) {
         rabbitTemplate.convertAndSend(exchange,routingKey,content);

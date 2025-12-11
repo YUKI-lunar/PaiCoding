@@ -1,5 +1,7 @@
 spring:
   kafka:
+    listener:
+      auto-startup: false
     bootstrap-servers: localhost:9092
     consumer:
       group-id: test-group
@@ -11,5 +13,4 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 logging:
   level:
-    org.springframework.kafka.listener: WARN
-    org.apache.kafka.clients.consumer: WARN
+    org.apache.kafka: ERROR

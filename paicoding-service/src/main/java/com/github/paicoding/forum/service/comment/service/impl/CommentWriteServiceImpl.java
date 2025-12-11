@@ -7,6 +7,7 @@ import com.github.paicoding.forum.api.model.exception.ExceptionUtil;
 import com.github.paicoding.forum.api.model.vo.comment.CommentSaveReq;
 import com.github.paicoding.forum.api.model.vo.constants.StatusEnum;
 import com.github.paicoding.forum.api.model.vo.notify.NotifyMsgEvent;
+import com.github.paicoding.forum.core.common.CommonConstants;
 import com.github.paicoding.forum.core.util.NumUtil;
 import com.github.paicoding.forum.core.util.SpringUtil;
 import com.github.paicoding.forum.service.article.repository.entity.ArticleDO;
@@ -16,6 +17,7 @@ import com.github.paicoding.forum.service.comment.converter.CommentConverter;
 import com.github.paicoding.forum.service.comment.repository.dao.CommentDao;
 import com.github.paicoding.forum.service.comment.repository.entity.CommentDO;
 import com.github.paicoding.forum.service.comment.service.CommentWriteService;
+import com.github.paicoding.forum.service.notify.help.RabbitNotifyHelper;
 import com.github.paicoding.forum.service.user.service.UserFootService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -83,10 +85,19 @@ public class CommentWriteServiceImpl implements CommentWriteService {
         this.haterBotTrigger(commentDO, parentComment);
 
         // 4. 发布添加/回复评论事件
+        if(RabbitNotifyHelper.enable()){
+            RabbitNotifyHelper.publishEvent(CommonConstants.DIRECT_EXCHANGE,NotifyTypeEnum.COMMENT.getQueueKey(),commentDO);
+        }else{
         SpringUtil.publishEvent(new NotifyMsgEvent<>(this, NotifyTypeEnum.COMMENT, commentDO));
+        }
+
         if (NumUtil.upZero(parentUser)) {
             // 评论回复事件
-            SpringUtil.publishEvent(new NotifyMsgEvent<>(this, NotifyTypeEnum.REPLY, commentDO));
+            if(RabbitNotifyHelper.enable()){
+                RabbitNotifyHelper.publishEvent(CommonConstants.DIRECT_EXCHANGE,NotifyTypeEnum.REPLY.getQueueKey(),commentDO);
+            }else {
+                SpringUtil.publishEvent(new NotifyMsgEvent<>(this, NotifyTypeEnum.REPLY, commentDO));
+            }
         }
         return commentDO;
     }

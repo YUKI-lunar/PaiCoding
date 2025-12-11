@@ -6,9 +6,11 @@ import com.github.paicoding.forum.api.model.exception.ExceptionUtil;
 import com.github.paicoding.forum.api.model.vo.constants.StatusEnum;
 import com.github.paicoding.forum.api.model.vo.notify.NotifyMsgEvent;
 import com.github.paicoding.forum.api.model.vo.user.UserPwdLoginReq;
+import com.github.paicoding.forum.core.common.CommonConstants;
 import com.github.paicoding.forum.core.util.RandUtil;
 import com.github.paicoding.forum.core.util.SpringUtil;
 import com.github.paicoding.forum.core.util.TransactionUtil;
+import com.github.paicoding.forum.service.notify.help.RabbitNotifyHelper;
 import com.github.paicoding.forum.service.user.converter.UserAiConverter;
 import com.github.paicoding.forum.service.user.repository.dao.UserAiDao;
 import com.github.paicoding.forum.service.user.repository.dao.UserDao;
@@ -130,7 +132,10 @@ public class RegisterServiceImpl implements RegisterService {
             @Override
             public void run() {
                 // 用户注册事件
-                SpringUtil.publishEvent(new NotifyMsgEvent<>(this, NotifyTypeEnum.REGISTER, userId));
+                //SpringUtil.publishEvent(new NotifyMsgEvent<>(this, NotifyTypeEnum.REGISTER, userId));
+                RabbitNotifyHelper.publishEvent(CommonConstants.DIRECT_EXCHANGE,
+                        NotifyTypeEnum.REGISTER.getQueueKey(),
+                        userId);
             }
         });
     }

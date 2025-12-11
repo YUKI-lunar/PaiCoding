@@ -1,6 +1,7 @@
 package com.github.paicoding.forum.service.shortlink.service.impl;
 
 import com.github.paicoding.forum.api.model.context.ReqInfoContext;
+import com.github.paicoding.forum.api.model.enums.YesOrNoEnum;
 import com.github.paicoding.forum.service.shortlink.repository.entity.ShortLinkDO;
 import com.github.paicoding.forum.api.model.vo.shortlink.dto.ShortLinkDTO;
 import com.github.paicoding.forum.service.shortlink.repository.entity.ShortLinkRecordDO;
@@ -83,7 +84,9 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         if (log.isDebugEnabled()) {
             log.debug("Short link created with ID: {}", shortLinkId);
         }
-        RedisClient.hSet(REDIS_SHORT_LINK_PREFIX + shortCode, shortLinkDO.getOriginalUrl(), String.class);
+        //todo 这里的存明显有问题啊
+        RedisClient.hSet(REDIS_SHORT_LINK_PREFIX + shortCode, "originalUrl",shortLinkDO.getOriginalUrl());
+        //RedisClient.hSet(REDIS_SHORT_LINK_PREFIX + shortCode, shortLinkDO.getOriginalUrl().class);
 
         // 保存记录到DB
         ShortLinkRecordDO shortLinkRecordDO = createShortLinkRecordDO(shortLinkDO.getShortCode(), shortLinkDTO);
@@ -166,7 +169,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
         shortLinkDO.setShortCode(shortCode);
         shortLinkDO.setCreateTime(currentDate);
         shortLinkDO.setUpdateTime(currentDate);
-        shortLinkDO.setDeleted(0);
+        shortLinkDO.setDeleted(YesOrNoEnum.NO.getCode());
         return shortLinkDO;
     }
 
@@ -198,6 +201,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
      * @return 原始URL
      */
     private String getOriginalUrlFromCacheOrDb(String shortCode) {
+        //todo 这里的存取机制弄得怪怪的,我觉得改成 (REDIS_SHORT_LINK_PREFIX-shortcode-url)的形式好些
         String originalUrl = RedisClient.hGet(REDIS_SHORT_LINK_PREFIX + shortCode, "originalUrl", String.class);
         if (!StringUtils.hasText(originalUrl)) {
             ShortLinkDO shortLinkDO = shortLinkMapper.getByShortCode(shortCode);
