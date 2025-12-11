@@ -1,14 +1,12 @@
-<p align="center">
-  <a href="https://paicoding.com/">
-    <img src="https://cdn.tobebetterjavaer.com/images/README/1681354262213.png" alt="技术派，让技术也能很好玩" width="400">
-  </a>
-</p>
+这是一个基于开源社区系统技术派二次开发的个人学习用项目
+
 一个基于 Spring Boot、MyBatis-Plus、MySQL、Redis、ElasticSearch、MongoDB、Docker、RabbitMQ 等技术栈实现的社区系统，采用主流的互联网技术架构、全新的UI设计、支持一键源码部署，拥有完整的文章&教程发布/搜索/评论/统计流程等，代码完全开源，没有任何二次封装，是一个非常适合二次开发/实战的现代化社区项目👍 。
 <br><br>
 
 
 
-### 架构图
+
+### 一.架构设计
 
 #### 系统架构图
 
@@ -19,7 +17,10 @@
 
 ![技术派业务架构图](https://cdn.tobebetterjavaer.com/paicoding/main/paicoding-business.jpg)
 
-### 组织结构
+
+### 二. 项目结构
+
+#### 组织结构
 
 ```
 paicoding
@@ -137,15 +138,13 @@ mvn clean install -DskipTests=true -Pprod
 |    docker     | 4.10.0+   | [https://docs.docker.com/desktop/](https://docs.docker.com/desktop/)                                                   |
 | let's encrypt | https证书   | [https://letsencrypt.org/](https://letsencrypt.org/)                                                                   |
 
+### 三.项目启动
 
+#### 本地部署教程
 
+> [本地开发环境手把手教程](docs/本地开发环境配置教程.md)
 
+### 云服务器部署教程
 
-
-
-
-
-
-
-
-
+> [环境搭建 & 基于源码的部署教程](docs/安装环境.md)
+> [服务器启动教程](docs/服务器启动教程.md)
